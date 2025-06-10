@@ -33,7 +33,7 @@ require_once(__DIR__ . '/functions.php');
 
 
 
-        <?php foreach (getRecipes($recipes) as $recipe) : ?>
+        <?php foreach (getRecipes($recipe) as $recipe) : ?>
             <article>
                 <h3><a href="recipes_read.php?id=<?php echo($recipe['recipe_id']); ?>"><?php echo($recipe['title']); ?></a></h3>
                 <div><?php echo $recipe['recipe']; ?></div>

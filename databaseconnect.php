@@ -1,14 +1,8 @@
 <?php
-require_once(__DIR__ . '/config/mysql.php'); // Cette ligne reste inchangée
-
-try {
-    // Ici on crée bien une instance de PDO et non d'une variable non définie
-    $mysqlClient = new PDO(
-        sprintf('mysql:host=%s;dbname=%s;port=%s;charset=utf8', MYSQL_HOST, MYSQL_NAME, MYSQL_PORT),
-        'root',
-        'root'
-    );
-    $mysqlClient->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (Exception $exception) {
-    die('Erreur : ' . $exception->getMessage());
-}
+// Connexion à la base de données
+$mysqlClient = new PDO(
+    'mysql:host=localhost;dbname=partage_de_recettes;charset=utf8',
+    'root',
+    'root',
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+);

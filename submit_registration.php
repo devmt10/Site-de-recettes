@@ -26,7 +26,7 @@ if (!empty($_POST['full_name']) && !empty($_POST['age']) && !empty($_POST['email
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         try {
-            $pdo = $mysqlClient;            $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+            $pdo = $mysqlClient;            $stmt = $pdo->prepare("SELECT COUNT(*) FROM user WHERE email = ?");
             $stmt->execute([$email]);
             $exists = $stmt->fetchColumn();
 
@@ -34,7 +34,7 @@ if (!empty($_POST['full_name']) && !empty($_POST['age']) && !empty($_POST['email
                 $_SESSION['REGISTER_MESSAGE'] = "Cet email est déjà utilisé.";
                 $_SESSION['REGISTER_SUCCESS'] = false;
             } else {
-                $stmt = $pdo->prepare("INSERT INTO users (full_name, age, email, password) VALUES (?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO user (full_name, age, email, password) VALUES (?, ?, ?, ?)");
                 $stmt->execute([$full_name, $age, $email, $passwordHash]);
 
                 $_SESSION['REGISTER_MESSAGE'] = "Inscription réussie. Vous pouvez maintenant vous connecter.";

@@ -6,7 +6,7 @@ $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 
 // Requête préparée pour sécuriser contre l'injection SQL
-$stmt = $mysqlClient->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+$stmt = $mysqlClient->prepare("SELECT * FROM user WHERE email = :email LIMIT 1");
 $stmt->execute(['email' => $email]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
