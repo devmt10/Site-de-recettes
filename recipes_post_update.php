@@ -1,69 +1,66 @@
-
 <?php
+ob_start();
 session_start();
+ini_set('display_errors',1);
+error_reporting(E_ALL);
 
-require_once(__DIR__ . '/isConnect.php');
-require_once(__DIR__ . '/config/mysql.php');
-require_once(__DIR__ . '/databaseconnect.php');
+require_once(__DIR__.'/isConnect.php');
+require_once(__DIR__.'/config/mysql.php');
+require_once(__DIR__.'/databaseconnect.php');
 
-/**
- * On ne traite pas les super globales provenant de l'utilisateur directement,
- * ces données doivent être testées et vérifiées.
- */
-$postData = $_POST;
-
-if (
-    !isset($postData['id'])
-    || !is_numeric($postData['id'])
-    || empty($postData['title'])
-    || empty($postData['recipe'])
-    || trim(strip_tags($postData['title'])) === ''
-    || trim(strip_tags($postData['recipe'])) === ''
-) {
-    echo 'Il manque des informations pour permettre l\'édition du formulaire.';
-    return;
+function redirect_to(string $url) {
+    if (!headers_sent()) {
+        header("Location: {$url}");
+        exit;
+    }
+    echo "<script>window.location.replace('{$url}');</script>";
+    exit;
 }
 
-$id = (int)$postData['id'];
-$title = trim(strip_tags($postData['title']));
-$recipe = trim(strip_tags($postData['recipe']));
+// Only POST allowed
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect_to('index.php');
+}
 
-$insertRecipeStatement = $mysqlClient->prepare('UPDATE recipes SET title = :title, recipe = :recipe WHERE recipe_id = :id');
-$insertRecipeStatement->execute([
-    'title' => $title,
-    'recipe' => $recipe,
-    'id' => $id,
+// Validate and sanitize
+$id         = (int)($_POST['id'] ?? 0);
+$title      = trim($_POST['title'] ?? '');
+$recipeText = trim($_POST['recipe'] ?? '');
+$seasonId   = (int)($_POST['season'] ?? 0);
+$type       = $_POST['type'] ?? '';
+$status     = $_POST['status'] ?? '';
+
+if (
+    $id <= 0 ||
+    $title === '' ||
+    $recipeText === '' ||
+    $seasonId <= 0 ||
+    !in_array($type, ['sucré','salé'], true) ||
+    !in_array($status, ['draft','published'], true)
+) {
+    $_SESSION['UPDATE_ERROR'] = 'Tous les champs sont requis et valides.';
+    redirect_to("recipes_update.php?id={$id}");
+}
+
+// Update all fields
+$update = $mysqlClient->prepare("
+    UPDATE recipe
+       SET title     = :title,
+           recipe    = :recipe,
+           season_id = :season,
+           type      = :type,
+           status    = :status
+     WHERE recipe_id = :id
+");
+$update->execute([
+    ':title'   => $title,
+    ':recipe'  => $recipeText,
+    ':season'  => $seasonId,
+    ':type'    => $type,
+    ':status'  => $status,
+    ':id'      => $id
 ]);
 
-?>
+// (Optional image upload code here)
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site de Recettes - Création de recette</title>
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
-<body class="d-flex flex-column min-vh-100">
-    <div class="container">
-
-        <?php require_once(__DIR__ . '/header.php'); ?>
-        <h1>Recette modifiée avec succès !</h1>
-
-        <div class="card">
-
-            <div class="card-body">
-                <h5 class="card-title"><?php echo($title); ?></h5>
-                <p class="card-text"><b>Email</b> : <?php echo $_SESSION['LOGGED_USER']['email']; ?></p>
-                <p class="card-text"><b>Recette</b> : <?php echo $recipe; ?></p>
-            </div>
-        </div>
-    </div>
-    <?php require_once(__DIR__ . '/footer.php'); ?>
-</body>
-</html>
+redirect_to("recipes_read.php?id={$id}");

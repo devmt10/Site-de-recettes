@@ -1,5 +1,6 @@
 <?php
 session_start();
+var_dump($SESSION);
 
 require_once(__DIR__ . '/isConnect.php');
 require_once(__DIR__ . '/config/mysql.php');
@@ -7,64 +8,70 @@ require_once(__DIR__ . '/databaseconnect.php');
 
 $postData = $_POST;
 
+// Vérification des champs du formulaire
 if (
     !isset($postData['comment']) ||
     !isset($postData['recipe_id']) ||
     !is_numeric($postData['recipe_id']) ||
+    !isset($postData['review']) ||
     !is_numeric($postData['review'])
 ) {
-    echo('Le commentaire ou la note sont invalides.');
-    return;
+    $_SESSION['FLASH_MESSAGE'] = 'Le commentaire ou la note sont invalides.';
+    header('Location: recipe.php?id=' . $postData['recipe_id']);
+    exit;
 }
 
 $comment = trim(strip_tags($postData['comment']));
 $recipeId = (int)$postData['recipe_id'];
 $review = (int)$postData['review'];
 
+// Vérification de la note
 if ($review < 1 || $review > 5) {
-    echo 'La note doit être comprise entre 1 et 5';
-    return;
+    $_SESSION['FLASH_MESSAGE'] = 'La note doit être comprise entre 1 et 5.';
+    header('Location: index.php?id=' . $recipeId);
+    exit;
 }
 
+// Vérification du commentaire vide
 if ($comment === '') {
-    echo 'Le commentaire ne peut pas être vide.';
-    return;
+    $_SESSION['FLASH_MESSAGE'] = 'Le commentaire ne peut pas être vide.';
+    header('Location: index.php?id=' . $recipeId);
+    exit;
 }
 
-$insertRecipe = $mysqlClient->prepare('INSERT INTO comments(comment, recipe_id, user_id, review) VALUES (:comment, :recipe_id, :user_id, :review)');
-$insertRecipe->execute([
-    'comment' => $comment,
-    'recipe_id' => $recipeId,
-    'user_id' => $_SESSION['LOGGED_USER']['user_id'],
-    'review' => $review,
-]);
-?>
+// Vérification que l'utilisateur est connecté
+if (!isset($_SESSION['LOGGED_USER']) || !isset($_SESSION['LOGGED_USER']['user_id'])) {
+    $_SESSION['FLASH_MESSAGE'] = 'Vous devez être connecté pour laisser un commentaire.';
+    header('Location: index.php?id=' . $recipeId);
+    exit;
+}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Site de Recettes - Création de commentaire</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="d-flex flex-column min-vh-100">
-<div class="container mt-5">
+// Récupération de l'ID utilisateur
+$userId = (int)$_SESSION['LOGGED_USER']['user_id'];
 
-    <?php require_once(__DIR__ . '/header.php'); ?>
+try {
+    $insertRecipe = $mysqlClient->prepare('
+        INSERT INTO comment (comment, recipe_id, user_id, review)
+        VALUES (:comment, :recipe_id, :user_id, :review)
+    ');
 
-    <h1 class="mb-4">Commentaire ajouté avec succès !</h1>
+    $success = $insertRecipe->execute([
+        'comment' => $comment,
+        'recipe_id' => $recipeId,
+        'user_id' => $userId,
+        'review' => $review,
+    ]);
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <p class="card-text"><strong>Note</strong> : <?php echo $review; ?> / 5</p>
-            <p class="card-text"><strong>Votre commentaire</strong> : <?php echo strip_tags($comment); ?></p>
-        </div>
-    </div>
+    if (!$success) {
+        throw new Exception('Insertion failed');
+    }
 
-    <a href="index.php" class="btn btn-primary">Retour à l'accueil</a>
+    $_SESSION['FLASH_MESSAGE'] = 'Commentaire ajouté avec succès !';
+    header('Location: index.php?id=' . $recipeId);
+    exit;
 
-</div>
-
-<?php require_once(__DIR__ . '/footer.php'); ?>
-</body>
-</html>
+} catch (PDOException $e) {
+    $_SESSION['FLASH_MESSAGE'] = 'Erreur lors de l\'ajout du commentaire : ' . $e->getMessage();
+    header('Location: index.php?id=' . $recipeId);
+    exit;
+}

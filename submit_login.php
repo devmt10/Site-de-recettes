@@ -14,12 +14,17 @@ if ($user && password_verify($password, $user['password'])) {
     // Authentification réussie
     $_SESSION['LOGGED_USER'] = [
         'email' => $user['email'],
-        'name' => $user['name']
+        'name' => $user['full_name'],
+        'user_id' => $user['user_id']
     ];
+
+    // Set welcome message in session
+    $_SESSION['LOGIN_SUCCESS_MESSAGE'] = "Bonjour " . $user['full_name'] . " !";
+
     header('Location: index.php');
     exit;
 } else {
-    // Échec : message d’erreur stocké en session
+    // Échec : message d'erreur stocké en session
     $_SESSION['LOGIN_ERROR_MESSAGE'] = "Identifiants incorrects. Veuillez réessayer.";
     header('Location: login.php');
     exit;

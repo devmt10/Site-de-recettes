@@ -1,82 +1,128 @@
 <?php
-// Démarrer la session si nécessaire
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>À propos – Saveurs & Saisons</title>
-    <!-- Lien Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>À propos – Saveurs &amp; Saisons</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap & Icons -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    >
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+            rel="stylesheet"
+    >
+    <!-- Vogue‐style serif -->
+    <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
+            rel="stylesheet"
+    >
 
     <style>
-        /* Centrer et redimensionner l'image */
-        .about-image {
-            width: 100%; /* Ajuster la largeur selon l'écran */
-            max-width: 500px; /* Limiter la taille maximale */
-            height: auto; /* Garder les proportions de l'image */
-            display: block; /* S'assurer qu'elle est affichée en bloc */
-            margin: 0 auto; /* Centrer l'image horizontalement */
+        body {
+            background-color: #f9f6f1;
+            font-family: 'Georgia', serif;
+            color: #333;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .intro {
+            max-width: 720px;
+            margin: 1.5rem auto 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+        .chef-card {
+            max-width: 400px;
+            margin: 0 auto 2rem;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .chef-img {
+            width: 100%;
+            object-fit: cover;
+            border-top-left-radius: .375rem;
+            border-top-right-radius: .375rem;
+            max-height: 400px;
+        }
+        .chef-body {
+            text-align: center;
+            padding: 1rem;
+        }
+        .chef-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: .25rem;
+        }
+        .chef-role {
+            font-style: italic;
+            color: #777;
+            margin-bottom: .75rem;
+        }
+        .features {
+            max-width: 720px;
+            margin: 0 auto 3rem;
+        }
+        .features li {
+            margin-bottom: .5rem;
         }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-    <?php include 'header.php'; ?>
+<?php require_once(__DIR__ . '/header.php'); ?>
 
-    <main class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <h1 class="mb-4 text-center text-primary-emphasis">À propos de Saveurs & Saisons</h1>
-                <p class="lead text-justify">
-                    <!-- Carousel -->
-                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img class="d-block w-100" src="images/chef_plate.jpg" alt="Chef">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="images/friend_cooking.jpg" alt="Friends Cooking">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="images/kid_kitchen.jpg" alt="Kid Cooking">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="images/woman_cooking.jpg" alt="Woman Cooking">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="images/couple_cooking.jpg" alt="Couple cooking">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="images/man_cooking.jpg" alt="Man Cooking">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="images/women_cooking.jpg" alt="Women Cooking">
-                            </div>
-                        </div>
-                    </div>
+<main class="flex-fill">
+    <div class="container">
+        <h1>À propos de Saveurs &amp; Saisons</h1>
+        <p class="intro">
+            Saveurs &amp; Saisons est votre plateforme culinaire où chaque recette
+            est inspirée par le goût authentique de chaque saison. Parcourez,
+            partagez, commentez et notez vos plats favoris — vivez la cuisine en
+            toute élégance.
+        </p>
 
-                    <strong>Saveurs & Saisons</strong> est né d’une passion commune pour la cuisine de saison et le respect du rythme naturel des aliments. 
-                    Notre idée est simple : <em>vous accompagner dans la découverte de recettes savoureuses</em>, inspirées par les produits du moment, en tenant compte de la météo, de vos envies, et de votre localisation.
-                </p>
-                <p class="text-justify">
-                    Que vous soyez un amateur curieux ou un cuisinier passionné, notre site vous propose une expérience conviviale pour mieux manger, tout en respectant la nature et les saisons.
-                    Nous croyons que <strong>la météo influence nos goûts</strong> : en hiver, on aime les plats réconfortants ; en été, on recherche la fraîcheur. 
-                    C’est pourquoi nous avons décidé de combiner des données météo locales avec des suggestions culinaires adaptées.
-                </p>
-                <p class="text-justify">
-                    <strong>Saveurs & Saisons</strong>, c’est un guide moderne, ancré dans la tradition, qui célèbre le bon sens paysan et la gastronomie durable.
+        <div class="card chef-card">
+            <img
+                    src="images/damecooking.png"
+                    alt="Lara Croft"
+                    class="chef-img img-fluid"
+            >
+            <div class="chef-body">
+                <div class="chef-name">Lara Croft</div>
+                <div class="chef-role">Fondatrice &amp; Chef du site</div>
+                <p>
+                    Passionnée par la gastronomie, Lara veille à vous proposer
+                    des recettes raffinées, adaptées à chaque saison, et une expérience
+                    conviviale pour toute la communauté.
                 </p>
             </div>
         </div>
-    </main>
 
-    <!-- Script Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <h2 class="text-center mb-3">Fonctionnalités clés</h2>
+        <ul class="features list-unstyled">
+            <li><i class="bi bi-cloud-sun-fill me-2"></i>Recettes triées par saisons</li>
+            <li><i class="bi bi-star-fill me-2"></i>Système de notation par étoiles</li>
+            <li><i class="bi bi-chat-dots me-2"></i>Commentaires et avis de la communauté</li>
+            <li><i class="bi bi-upload me-2"></i>Ajout et modification d’images de vos plats</li>
+            <li><i class="bi bi-plus-circle me-2"></i>Proposez et gérez vos propres recettes</li>
+        </ul>
+    </div>
+</main>
+
+<?php require_once(__DIR__ . '/footer.php'); ?>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+></script>
 </body>
 </html>

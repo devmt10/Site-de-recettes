@@ -1,9 +1,19 @@
-<footer class="bg-footer text-center text-lg-start mt-auto py-3">
-    <div class="text-center p-3">
-        <a class="footer-link" href="https://github.com/devmt10" target="_blank" rel="noopener noreferrer">
-            <img src="images/github.png" alt="Logo GitHub" style="height: 40px;" class="img-fluid mb-2"><br>
-            <span class="text-primary">Maria Teresa Gueli</span>
-        </a><br>
-        <span class="text-secondary">© 2025</span>
+<footer class="bg-dark text-light mt-auto py-3">
+    <div class="container d-flex flex-column flex-md-row justify-content-center justify-content-md-between align-items-center">
+        <a
+                href="https://github.com/devmt10"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="d-flex flex-column flex-md-row align-items-center text-decoration-none text-light mb-3 mb-md-0"
+        >
+            <img
+                    src="images/github.png"
+                    alt="Logo GitHub"
+                    class="img-fluid me-md-2 mb-2 mb-md-0"
+                    style="height:40px;"
+            >
+            <span class="h6 mb-0">Maria Teresa Gueli</span>
+        </a>
+        <span class="small">© 2025 Saveurs &amp; Saisons</span>
     </div>
 </footer>

@@ -3,114 +3,143 @@ session_start();
 
 require_once(__DIR__ . '/config/mysql.php');
 require_once(__DIR__ . '/databaseconnect.php');
+require_once(__DIR__ . '/variables.php');   // defines $users if needed
+require_once(__DIR__ . '/functions.php');   // defines displayAuthor()
 
-/**
- * On ne traite pas les super globales provenant de l'utilisateur directement,
- * ces données doivent être testées et vérifiées.
- */
+// 1) Validate & fetch recipe ID
 $getData = $_GET;
-
 if (!isset($getData['id']) || !is_numeric($getData['id'])) {
-    echo('La recette n\'existe pas');
+    echo 'La recette n\'existe pas';
     return;
 }
 
-// On récupère la recette
-$retrieveRecipeWithCommentsStatement = $mysqlClient->prepare('SELECT r.*, c.comment_id, c.comment, c.user_id,  DATE_FORMAT(c.created_at, "%d/%m/%Y") as comment_date, u.full_name FROM recipes r 
-LEFT JOIN comments c on c.recipe_id = r.recipe_id
-LEFT JOIN users u ON u.user_id = c.user_id
-WHERE r.recipe_id = :id 
-ORDER BY comment_date DESC');
-$retrieveRecipeWithCommentsStatement->execute([
-    'id' => (int)$getData['id'],
-]);
-$recipeWithComments = $retrieveRecipeWithCommentsStatement->fetchAll(PDO::FETCH_ASSOC);
+// 2) Fetch recipe, poster, and comments
+$retrieveStmt = $mysqlClient->prepare(
+    'SELECT 
+        r.*,
+        u_poster.full_name AS poster_name,
+        r.user_id         AS poster_id,
+        c.comment_id, c.comment,
+        DATE_FORMAT(c.created_at, "%d/%m/%Y %Hh%i") AS comment_date,
+        u_comment.full_name AS commenter_name
+     FROM recipe AS r
+     LEFT JOIN user AS u_poster
+       ON r.user_id = u_poster.user_id
+     LEFT JOIN comment AS c 
+       ON r.recipe_id = c.recipe_id
+     LEFT JOIN user AS u_comment
+       ON c.user_id = u_comment.user_id
+     WHERE r.recipe_id = ?
+     ORDER BY c.created_at ASC'
+);
+$retrieveStmt->execute([ $getData['id'] ]);
+$rows = $retrieveStmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($recipeWithComments === []) {
-    echo('La recette n\'existe pas');
+if (empty($rows)) {
+    echo 'La recette n\'existe pas';
     return;
 }
-$retrieveAverageRatingStatement = $mysqlClient->prepare('SELECT ROUND(AVG(c.review),1) as rating FROM recipes r LEFT JOIN comments c on r.recipe_id = c.recipe_id WHERE r.recipe_id = :id');
-$retrieveAverageRatingStatement->execute([
-    'id' => (int)$getData['id'],
-]);
-$averageRating = $retrieveAverageRatingStatement->fetch();
-;
 
+// 3) Build the $recipe array
 $recipe = [
-    'recipe_id' => $recipeWithComments[0]['recipe_id'],
-    'title' => $recipeWithComments[0]['title'],
-    'recipe' => $recipeWithComments[0]['recipe'],
-    'author' => $recipeWithComments[0]['author'],
-    'comments' => [],
-    'rating' => $averageRating['rating'],
+    'recipe_id' => $rows[0]['recipe_id'],
+    'title'     => $rows[0]['title'],
+    'content'   => $rows[0]['recipe'],
+    'image'     => $rows[0]['image'] ?? null,
+    'poster'    => $rows[0]['poster_name'] ?? 'Anonyme',
+    'poster_id' => $rows[0]['poster_id'],      // user_id of the author
+    'comments'  => []
 ];
-
-foreach ($recipeWithComments as $comment) {
-    if (!is_null($comment['comment_id'])) {
+foreach ($rows as $row) {
+    if (!empty($row['comment_id'])) {
         $recipe['comments'][] = [
-            'comment_id' => $comment['comment_id'],
-            'comment' => $comment['comment'],
-            'user_id' => (int) $comment['user_id'],
-            'full_name' => $comment['full_name'],
-            'created_at' => $comment['comment_date'],
+            'id'         => $row['comment_id'],
+            'text'       => $row['comment'],
+            'author'     => $row['commenter_name'] ?? 'Inconnu',
+            'created_at' => $row['comment_date'],
         ];
     }
 }
 ?>
-
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site de Recettes - <?php echo($recipe['title']); ?></title>
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
-<body class="d-flex flex-column min-vh-100">
-    <div class="container">
+    <title>Saveurs &amp; Saisons – <?= htmlspecialchars($recipe['title']) ?></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <?php require_once(__DIR__ . '/header.php'); ?>
-        <h1><?php echo($recipe['title']); ?></h1>
-        <div class="row">
-            <article class="col">
-                <?php echo($recipe['recipe']); ?>
-            </article>
-            <aside class="col">
-                <p><i>Contribuée par <?php echo($recipe['author']); ?></i></p>
-                <?php if ($recipe['rating'] !== null) : ?>
-                    <p><b>Evaluée par la communauté à <?php echo($recipe['rating']); ?> / 5</b></p>
-                <?php else : ?>
-                    <p><b>Aucune évaluation</b></p>
-                <?php endif; ?>
-            </aside>
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #f9f6f1; font-family: 'Georgia', serif; color: #333; }
+        h1 { font-family: 'Didot', serif; font-size: 2.5rem; text-align: center; margin: 2rem 0; }
+        .recipe-img { max-height: 350px; object-fit: cover; border-radius: .375rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .card-body { font-size: 1.05rem; line-height: 1.6; }
+        .card-footer { background: #fff; border-top: none; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+        .author { font-style: italic; color: #777; }
+        .comment-box { background: #fff; border-radius: .375rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 1rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<div class="container my-5">
+    <?php require_once(__DIR__ . '/header.php'); ?>
+
+    <!-- Recipe Title -->
+    <h1><?= htmlspecialchars($recipe['title']) ?></h1>
+
+    <!-- Image Preview -->
+    <?php if (!empty($recipe['image'])): ?>
+        <div class="text-center mb-4">
+            <img src="uploads/<?= htmlspecialchars($recipe['image']) ?>"
+                 alt="Image de <?= htmlspecialchars($recipe['title']) ?>"
+                 class="recipe-img img-fluid">
         </div>
-        <hr />
-        <h2>Commentaires</h2>
-        <?php if ($recipe['comments'] !== []) : ?>
-        <div class="row">
-            <?php foreach ($recipe['comments'] as $comment) : ?>
-                <div class="comment">
-                    <p><?php echo($comment['created_at']); ?></p>
-                    <p><?php echo($comment['comment']); ?></p>
-                    <i>(<?php echo $comment['full_name']; ?>)</i>
-                </div>
-            <?php endforeach; ?>
+    <?php endif; ?>
+
+    <!-- Recipe Card -->
+    <div class="card mb-5">
+        <div class="card-body">
+            <?= nl2br(htmlspecialchars($recipe['content'])) ?>
         </div>
-        <?php else : ?>
-        <div class="row">
-            <p>Aucun commentaire</p>
+        <div class="card-footer">
+        <span class="author">
+          Contribué par <?= htmlspecialchars($recipe['poster']) ?>
+        </span>
         </div>
-        <?php endif; ?>
-        <hr />
-        <?php if (isset($_SESSION['LOGGED_USER'])) : ?>
-            <?php require_once(__DIR__ . '/comments_create.php'); ?>
-        <?php endif; ?>
     </div>
-    <?php require_once(__DIR__ . '/footer.php'); ?>
+
+    <!-- Comments Section -->
+    <h2 class="mb-4">Commentaires</h2>
+    <?php if (!empty($recipe['comments'])): ?>
+        <?php foreach ($recipe['comments'] as $c): ?>
+            <div class="comment-box">
+                <p class="mb-1">
+                    <strong><?= htmlspecialchars($c['author']) ?></strong>
+                    <small class="text-muted"><?= $c['created_at'] ?></small>
+                </p>
+                <p class="mb-0"><?= nl2br(htmlspecialchars($c['text'])) ?></p>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="text-muted">Aucun commentaire pour le moment.</p>
+    <?php endif; ?>
+
+    <!-- Comment Form (only for non-authors) -->
+    <?php if (
+        isset($_SESSION['LOGGED_USER'])
+        && $_SESSION['LOGGED_USER']['user_id'] !== $recipe['poster_id']
+    ): ?>
+        <?php require_once(__DIR__ . '/comments_create.php'); ?>
+    <?php endif; ?>
+
+</div>
+
+<?php require_once(__DIR__ . '/footer.php'); ?>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,66 +1,150 @@
 <?php
 session_start();
-require_once(__DIR__ . '/isConnect.php');
-?>
+require_once __DIR__.'/isConnect.php';           // redirect if not logged in
+require_once __DIR__.'/config/mysql.php';
+require_once __DIR__.'/databaseconnect.php';
 
+// 1) Charger les saisons actives
+$seasonStmt = $mysqlClient->prepare('SELECT season_id, title FROM SEASON WHERE is_enabled = 1');
+$seasonStmt->execute();
+$seasons = $seasonStmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site de Recettes - Ajout de recette</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Proposer une recette – Saveurs &amp; Saisons</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body { background:#f9f6f1; font-family:Georgia,serif; color:#333; }
+    main { flex:1; padding:2rem 0; }
+    .form-card { max-width:720px; margin:0 auto; }
+    .card { border:none; border-radius:.5rem; box-shadow:0 4px 20px rgba(0,0,0,.05); }
+    .card-body { padding:2rem; }
+    h1 { font-family:'Playfair Display', serif; text-align:center; margin-bottom:1.5rem; }
+    .btn-primary { background:#6b5b95; border-color:#6b5b95; }
+    .btn-primary:hover { background:#5a4a84; border-color:#5a4a84; }
+  </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-<div class="container">
-    <?php require_once(__DIR__ . '/header.php'); ?>
+  <?php require __DIR__.'/header.php'; ?>
 
-    <h1>Ajouter une recette</h1>
-
-    <form action="recipes_post_create.php" method="POST">
-        <!-- Titre -->
-        <div class="mb-3">
-            <label for="title" class="form-label">Titre de la recette</label>
-            <input type="text" class="form-control" id="title" name="title" required>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-3">
-            <label for="recipe" class="form-label">Description de la recette</label>
-            <textarea class="form-control" id="recipe" name="recipe" required></textarea>
-        </div>
-
-        <!-- Saison -->
-        <div class="mb-3">
-            <label for="season" class="form-label">Saison</label>
-            <select class="form-select" id="season" name="season" required>
-                <option value="">-- Sélectionner une saison --</option>
-                <option value="printemps">Printemps</option>
-                <option value="été">Été</option>
-                <option value="automne">Automne</option>
-                <option value="hiver">Hiver</option>
-            </select>
-        </div>
-
-        <!-- Type : Salé ou Sucré -->
-        <div class="mb-3">
-            <label class="form-label">Type de recette</label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="type" id="sale" value="salé" required>
-                <label class="form-check-label" for="sale">Salé</label>
+  <main>
+    <div class="container form-card">
+      <h1>Proposer une recette</h1>
+      <div class="card">
+        <div class="card-body">
+          <?php if (!empty($_SESSION['CREATE_ERROR'])): ?>
+            <div class="alert alert-danger text-center">
+              <?= htmlspecialchars($_SESSION['CREATE_ERROR']) ?>
+              <?php unset($_SESSION['CREATE_ERROR']); ?>
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="type" id="sucre" value="sucré">
-                <label class="form-check-label" for="sucre">Sucré</label>
+          <?php endif; ?>
+
+          <form action="recipes_post_create.php" method="POST" enctype="multipart/form-data">
+            <div class="row g-3">
+              <!-- title -->
+              <div class="col-12">
+                <label class="form-label" for="title">
+                  <i class="bi bi-card-text me-1"></i> Titre
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  class="form-control"
+                  required
+                  placeholder="Ex. Tarte tatin aux pommes"
+                >
+              </div>
+
+              <!-- recipe -->
+              <div class="col-12">
+                <label class="form-label" for="recipe">
+                  <i class="bi bi-journals me-1"></i> Description
+                </label>
+                <textarea
+                  id="recipe"
+                  name="recipe"
+                  class="form-control"
+                  rows="5"
+                  required
+                  placeholder="Décrivez la préparation…"
+                ></textarea>
+              </div>
+
+              <!-- season_id -->
+              <div class="col-md-6">
+                <label class="form-label" for="season_id">
+                  <i class="bi bi-calendar-event me-1"></i> Saison
+                </label>
+                <select
+                  id="season_id"
+                  name="season_id"
+                  class="form-select"
+                  required
+                >
+                  <option value="" disabled selected>Sélectionnez</option>
+                  <?php foreach ($seasons as $s): ?>
+                    <option value="<?= $s['season_id'] ?>">
+                      <?= ucfirst(htmlspecialchars($s['title'])) ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+
+              <!-- type -->
+              <div class="col-md-6">
+                <label class="form-label" for="type">
+                  <i class="bi bi-tag me-1"></i> Type
+                </label>
+                <select
+                  id="type"
+                  name="type"
+                  class="form-select"
+                  required
+                >
+                  <option value="" disabled selected>Sélectionnez</option>
+                  <option value="sucré">Sucrée</option>
+                  <option value="salé">Salée</option>
+                </select>
+              </div>
+
+              <!-- image -->
+              <div class="col-12">
+                <label class="form-label" for="image">
+                  <i class="bi bi-image me-1"></i> Image (optionnel)
+                </label>
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                  class="form-control"
+                >
+                <div class="form-text">Formats JPG/PNG/GIF, max. 2 Mo</div>
+              </div>
+
+              <!-- submit -->
+              <div class="col-12 text-center mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                  <i class="bi bi-plus-circle me-1"></i> Ajouter la recette
+                </button>
+              </div>
             </div>
+          </form>
+
         </div>
+      </div>
+    </div>
+  </main>
 
-        <!-- Bouton envoyer -->
-        <button type="submit" class="btn btn-primary">Envoyer</button>
-    </form>
-</div>
-
-<?php require_once(__DIR__ . '/footer.php'); ?>
+  <?php require __DIR__.'/footer.php'; ?>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

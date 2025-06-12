@@ -19,34 +19,42 @@ if (!empty($_POST['full_name']) && !empty($_POST['age']) && !empty($_POST['email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['REGISTER_MESSAGE'] = "Adresse email invalide.";
         $_SESSION['REGISTER_SUCCESS'] = false;
+        header('Location: registration.php');
+        exit;
     } elseif (!isPasswordSecure($password)) {
         $_SESSION['REGISTER_MESSAGE'] = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.";
         $_SESSION['REGISTER_SUCCESS'] = false;
+        header('Location: registration.php');
+        exit;
     } else {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         try {
-            $pdo = $mysqlClient;            $stmt = $pdo->prepare("SELECT COUNT(*) FROM user WHERE email = ?");
+            $pdo = $mysqlClient;
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM user WHERE email = ?");
             $stmt->execute([$email]);
             $exists = $stmt->fetchColumn();
 
             if ($exists) {
                 $_SESSION['REGISTER_MESSAGE'] = "Cet email est déjà utilisé.";
                 $_SESSION['REGISTER_SUCCESS'] = false;
+                header('Location: registration.php');
+                exit;
             } else {
                 $stmt = $pdo->prepare("INSERT INTO user (full_name, age, email, password) VALUES (?, ?, ?, ?)");
                 $stmt->execute([$full_name, $age, $email, $passwordHash]);
 
-                $_SESSION['REGISTER_MESSAGE'] = "Inscription réussie. Vous pouvez maintenant vous connecter.";
-                $_SESSION['REGISTER_SUCCESS'] = true;
+                $_SESSION['WELCOME_MESSAGE'] = "Bienvenue, $full_name ! Votre inscription a été un succès.";
+                header('Location: index.php');
+                exit;
             }
         } catch (PDOException $e) {
             $_SESSION['REGISTER_MESSAGE'] = "Erreur lors de l'inscription : " . $e->getMessage();
             $_SESSION['REGISTER_SUCCESS'] = false;
+            header('Location: registration.php');
+            exit;
         }
     }
-    header('Location: registration.php');
-    exit;
 } else {
     $_SESSION['REGISTER_MESSAGE'] = "Veuillez remplir tous les champs.";
     $_SESSION['REGISTER_SUCCESS'] = false;

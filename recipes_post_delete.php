@@ -5,7 +5,7 @@ if (!isset($_POST['id'])) {
     die('Identifiant de la recette manquant.');
 }
 
-$deleteRecipeStatement = $mysqlClient->prepare('DELETE FROM recipes WHERE recipe_id = :id');
+$deleteRecipeStatement = $mysqlClient->prepare('DELETE FROM recipe WHERE recipe_id = :id');
 $deleteRecipeStatement->execute([
     'id' => $_POST['id']
 ]);
