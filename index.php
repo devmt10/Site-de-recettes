@@ -24,25 +24,23 @@ foreach ($seasonsRaw as $s) {
     $seasons[(int)$s['season_id']] = $s['title'];
 }
 
-// 4) Séparer publiées vs. brouillons de l’utilisateur
-$published = getRecipes($allRecipes);
-$drafts = [];
-if (!empty($_SESSION['LOGGED_USER']['user_id'])) {
-    $me = $_SESSION['LOGGED_USER']['user_id'];
-    foreach ($allRecipes as $r) {
-        if ($r['status'] === 'draft' && (int)$r['user_id'] === $me) {
-            $drafts[] = $r;
-        }
+// 4) Affichage des recettes selon statut et utilisateur
+$displayRecipes = [];
+
+$currentUserId = $_SESSION['LOGGED_USER']['user_id'] ?? null;
+
+foreach ($allRecipes as $r) {
+    if ($r['status'] === 'published') {
+        $displayRecipes[] = $r;
+    } elseif (
+        $r['status'] === 'draft' &&
+        $currentUserId !== null &&
+        (int)$r['user_id'] === (int)$currentUserId
+    ) {
+        $displayRecipes[] = $r;
     }
 }
 
-// 5) Fusionner sans doublons par recipe_id
-$combined = array_merge($published, $drafts);
-$byId = [];
-foreach ($combined as $r) {
-    $byId[$r['recipe_id']] = $r;
-}
-$displayRecipes = array_values($byId);
 
 // 6) Appliquer filtres GET (Auteur & Saison)
 $authorFilter = (int)($_GET['author'] ?? 0);
