@@ -1,66 +1,57 @@
 <?php
-ob_start();
 session_start();
-ini_set('display_errors',1);
-error_reporting(E_ALL);
+require_once(__DIR__ . '/isConnect.php');
+require_once(__DIR__ . '/config/mysql.php');
+require_once(__DIR__ . '/databaseconnect.php');
 
-require_once(__DIR__.'/isConnect.php');
-require_once(__DIR__.'/config/mysql.php');
-require_once(__DIR__.'/databaseconnect.php');
-
-function redirect_to(string $url) {
-    if (!headers_sent()) {
-        header("Location: {$url}");
-        exit;
-    }
-    echo "<script>window.location.replace('{$url}');</script>";
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo "Requête invalide";
     exit;
 }
 
-// Only POST allowed
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect_to('index.php');
+$id = (int)($_POST['id'] ?? 0);
+$title = trim($_POST['title'] ?? '');
+$recipe = trim($_POST['recipe'] ?? '');
+$seasonId = (int)($_POST['season_id'] ?? 0);
+$type = trim($_POST['type'] ?? '');
+$status = trim($_POST['status'] ?? 'draft');
+
+if ($id <= 0 || $title === '' || $recipe === '' || $seasonId <= 0 || !in_array($type, ['sucré', 'salé']) || !in_array($status, ['draft', 'published'])) {
+    $_SESSION['UPDATE_ERROR'] = "Champs manquants ou invalides.";
+    header("Location: recipes_update.php?id=$id");
+    exit;
 }
 
-// Validate and sanitize
-$id         = (int)($_POST['id'] ?? 0);
-$title      = trim($_POST['title'] ?? '');
-$recipeText = trim($_POST['recipe'] ?? '');
-$seasonId   = (int)($_POST['season'] ?? 0);
-$type       = $_POST['type'] ?? '';
-$status     = $_POST['status'] ?? '';
-
-if (
-    $id <= 0 ||
-    $title === '' ||
-    $recipeText === '' ||
-    $seasonId <= 0 ||
-    !in_array($type, ['sucré','salé'], true) ||
-    !in_array($status, ['draft','published'], true)
-) {
-    $_SESSION['UPDATE_ERROR'] = 'Tous les champs sont requis et valides.';
-    redirect_to("recipes_update.php?id={$id}");
-}
-
-// Update all fields
-$update = $mysqlClient->prepare("
-    UPDATE recipe
-       SET title     = :title,
-           recipe    = :recipe,
-           season_id = :season,
-           type      = :type,
-           status    = :status
-     WHERE recipe_id = :id
+// Mise à jour principale
+$stmt = $mysqlClient->prepare("
+    UPDATE recipe SET
+        title = :title,
+        recipe = :recipe,
+        season_id = :season,
+        type = :type,
+        status = :status
+    WHERE recipe_id = :id
 ");
-$update->execute([
-    ':title'   => $title,
-    ':recipe'  => $recipeText,
-    ':season'  => $seasonId,
-    ':type'    => $type,
-    ':status'  => $status,
-    ':id'      => $id
+$stmt->execute([
+    ':title' => $title,
+    ':recipe' => $recipe,
+    ':season' => $seasonId,
+    ':type' => $type,
+    ':status' => $status,
+    ':id' => $id
 ]);
 
-// (Optional image upload code here)
+// Traitement image si nouvelle
+if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    $tmp = $_FILES['image']['tmp_name'];
+    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+    if (in_array($ext, ['jpg','jpeg','png','gif'])) {
+        $name = uniqid('img_') . '.' . $ext;
+        move_uploaded_file($tmp, __DIR__ . "/uploads/$name");
+        $mysqlClient->prepare("UPDATE recipe SET image = :img WHERE recipe_id = :id")
+            ->execute([':img' => $name, ':id' => $id]);
+    }
+}
 
-redirect_to("recipes_read.php?id={$id}");
+header("Location: recipes_read.php?id=$id");
+exit;
