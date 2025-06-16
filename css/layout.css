@@ -1,19 +1,33 @@
-/* Layout styles for overall structure */
-.container {
-    flex: 1;
-    padding: 2rem 1rem;
+/* Reset des marges et paddings par défaut */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
-.row {
-    margin: 0 -15px;
+/* Conteneur principal */
+.main-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.col-md-4, .col-md-6, .col-lg-4 {
-    padding: 0 15px;
+/* Espacement uniforme entre les sections */
+.section {
+    margin-bottom: 40px;
+    padding: 20px 0;
 }
 
+/* Pour les petits écrans */
 @media (max-width: 768px) {
-    .container {
-        padding: 1.5rem 0.75rem;
+    .main-container {
+        padding: 15px;
+    }
+
+    .section {
+        margin-bottom: 30px;
+        padding: 15px 0;
     }
 }

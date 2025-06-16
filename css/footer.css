@@ -2,14 +2,23 @@
 footer {
     background: var(--primary-color);
     color: #fff;
-    padding: 1rem;
+    padding: 2rem 0;
     text-align: center;
+    margin-top: auto; /* Pour le sticky footer */
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 footer p {
     margin: 0;
     font-size: 0.9rem;
 }
+
+
 
 footer a {
     color: #fff;

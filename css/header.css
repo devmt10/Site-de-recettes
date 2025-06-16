@@ -1,8 +1,16 @@
 .navbar {
+    width: 100%;
+    padding: 1rem 0;
+    margin: 0 auto;
     font-family: 'Georgia', serif;
-    padding: 1.25rem 0;
-    margin: 0;
+    background-color: #fff;
     border-bottom: 1px solid #d4c9b8;
+}
+
+.container-fluid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .navbar-brand {
@@ -25,13 +33,16 @@
 
 .navbar-nav {
     display: flex;
+    flex-direction: row;
     align-items: center;
+    gap: 1.5rem;
+    margin-left: 0;
 }
 
 .nav-link {
     color: #333 !important;
     font-size: 1rem;
-    padding: 0.5rem 1.25rem !important;
+    padding: 0.5rem 1rem !important;
     line-height: 1.5;
     transition: color 0.3s ease;
 }
@@ -42,6 +53,12 @@
 
 .navbar-collapse {
     flex-grow: 1;
+    justify-content: space-between;
+}
+
+.container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 .d-flex.align-items-center {
@@ -84,6 +101,7 @@
     .navbar-nav {
         flex-direction: column;
         align-items: stretch;
+        gap: 0;
     }
     .nav-link {
         padding: 0.5rem 1rem !important;
@@ -95,7 +113,8 @@
         gap: 0.5rem;
         margin-top: 0.5rem;
     }
-    .d-flex.align-items-center .btn, .d-flex.align-items-center .user-name {
+    .d-flex.align-items-center .btn,
+    .d-flex.align-items-center .user-name {
         width: 100%;
         text-align: center;
         padding: 0.5rem;

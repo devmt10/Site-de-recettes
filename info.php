@@ -18,19 +18,22 @@ session_start();
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
+
 <?php require_once(__DIR__ . '/header.php'); ?>
-<main class="flex-fill">
+
+<main class="flex-fill py-4">
     <div class="container">
-        <h1>À propos de Saveurs & Saisons</h1>
+        <h1 class="text-center">À propos de Saveurs & Saisons</h1>
         <p class="intro">
             Saveurs & Saisons est votre plateforme culinaire où chaque recette
             est inspirée par le goût authentique de chaque saison. Parcourez,
             partagez, commentez et notez vos plats favoris — vivez la cuisine en
             toute élégance.
         </p>
-        <div class="card chef-card">
+
+        <div class="card chef-card h-100">
             <img src="images/damecooking.png" alt="Lara Croft" class="chef-img img-fluid">
-            <div class="chef-body">
+            <div class="card-body chef-body">
                 <div class="chef-name">Lara Croft</div>
                 <div class="chef-role">Fondatrice & Chef du site</div>
                 <p>
@@ -40,6 +43,7 @@ session_start();
                 </p>
             </div>
         </div>
+
         <h2 class="text-center mb-3">Fonctionnalités clés</h2>
         <ul class="features list-unstyled">
             <li><i class="bi bi-cloud-sun-fill me-2"></i>Recettes triées par saisons</li>
@@ -50,6 +54,7 @@ session_start();
         </ul>
     </div>
 </main>
+
 <?php require_once(__DIR__ . '/footer.php'); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

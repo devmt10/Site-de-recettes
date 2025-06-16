@@ -1,25 +1,30 @@
 .container {
-    max-width: 960px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.container-wide {
-    max-width: 1140px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
+/* Pour les titres */
 h1 {
     font-family: 'Playfair Display', serif;
     font-size: 2.5rem;
     color: #2d2d2d;
-    margin-bottom: 1.5rem;
+    margin: 0 0 1.5rem 0;
     text-align: center;
+    padding-top: 20px;
+}
+
+/* Pour les éléments de formulaire */
+.form-group {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .intro {
@@ -85,5 +90,23 @@ h1 {
     }
     .recipe-detail h1 {
         font-size: 1.8rem;
+    }
+}
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    padding: 0.6rem 0.9rem;
+    font-size: 1.2rem;
+    border-radius: 0;
+    transition: opacity 0.3s ease;
+}
+@media (max-width: 768px) {
+    .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
     }
 }

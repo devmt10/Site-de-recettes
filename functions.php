@@ -1,4 +1,4 @@
--<?php
+<?php
 if (!function_exists('getRecipes')) {
     function getRecipes(array $rs): array {
         return array_values(array_filter($rs, fn($r) =>

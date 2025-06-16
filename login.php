@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="post" action="login.php">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="jean@gmail.com" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Mot de passe</label>
