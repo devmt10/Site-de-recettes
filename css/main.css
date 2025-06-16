@@ -1,0 +1,89 @@
+.container {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.container-wide {
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #2d2d2d;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.intro {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+.weather-input {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.weather-input input {
+    flex: 1;
+}
+
+.filters {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filters select {
+    flex: 1;
+}
+
+.filters button {
+    flex: 0 0 auto;
+}
+
+.recipe-detail h1 {
+    font-size: 2rem;
+    text-align: left;
+}
+
+.recipe-detail p {
+    font-size: 1rem;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .container, .container-wide {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    h1 {
+        font-size: 2rem;
+    }
+    .intro {
+        font-size: 1rem;
+    }
+    .weather-input, .filters {
+        flex-direction: column;
+    }
+    .weather-input input, .filters select, .filters button {
+        width: 100%;
+    }
+    .recipe-detail h1 {
+        font-size: 1.8rem;
+    }
+}

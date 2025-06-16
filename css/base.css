@@ -1,0 +1,169 @@
+body {
+    background-color: #f9f6f1;
+    font-family: 'Georgia', serif;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-primary {
+    background: #2d2d2d;
+    border: none;
+    color: #fff;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #4a4a4a;
+}
+
+.btn-primary.btn-sm {
+    background: #fff;
+    color: #333;
+    border: 1px solid #333;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+}
+
+.btn-primary.btn-sm:hover {
+    background: #f5f0e8;
+    color: #333;
+}
+
+.btn-dark.btn-sm {
+    background: #fff;
+    color: #333;
+    border: 1px solid #333;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    transition: background 0.3s ease;
+}
+
+.btn-dark.btn-sm:hover {
+    background: #f5f0e8;
+    color: #333;
+}
+
+.btn-success {
+    background: #2d2d2d;
+    border: none;
+    color: #fff;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    transition: background 0.3s ease;
+}
+
+.btn-success:hover {
+    background: #4a4a4a;
+}
+
+.btn-outline-dark {
+    border: 1px solid #2d2d2d;
+    color: #2d2d2d;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-dark:hover {
+    background: #2d2d2d;
+    color: #fff;
+}
+
+.btn-outline-danger {
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+}
+
+.btn-outline-danger:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+.form-select,
+.form-control {
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    border: 1px solid #d4c9b8;
+    border-radius: 0;
+    padding: 0.5rem;
+    background: #fff;
+}
+
+.form-label {
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.rating-input {
+    display: flex;
+    gap: 0.25rem;
+    flex-direction: row-reverse;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    color: #d4a373;
+    font-size: 1rem;
+}
+
+.rating-input input:checked ~ label i,
+.rating-input label:hover i,
+.rating-input label:hover ~ label i {
+    color: #d4a373;
+    content: '\f586'; /* bi-star-fill */
+}
+
+.rating-input label i::before {
+    content: '\f588'; /* bi-star */
+}
+
+.rating-input input:checked ~ label i::before,
+.rating-input label:hover i::before,
+.rating-input label:hover ~ label i::before {
+    content: '\f586'; /* bi-star-fill */
+}
+
+@media (max-width: 768px) {
+    .btn-primary, .btn-success {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+    .btn-primary.btn-sm, .btn-dark.btn-sm {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+    .form-control, .form-select {
+        font-size: 0.9rem;
+        padding: 0.4rem;
+    }
+    .rating-input {
+        font-size: 0.9rem;
+    }
+}

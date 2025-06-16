@@ -1,140 +1,73 @@
 <?php
 session_start();
+require_once(__DIR__ . '/config/mysql.php');
+require_once(__DIR__ . '/databaseconnect.php');
+
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    if (empty($email) || empty($password)) {
+        $error = 'Veuillez remplir tous les champs.';
+    } else {
+        $stmt = $mysqlClient->prepare('SELECT user_id, full_name, email, password FROM user WHERE email = ?');
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['LOGGED_USER'] = [
+                'user_id' => $user['user_id'],
+                'full_name' => $user['full_name'],
+                'email' => $user['email']
+            ];
+            header('Location: index.php');
+            exit;
+        } else {
+            $error = 'Email ou mot de passe incorrect.';
+        }
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Connexion – Saveurs &amp; Saisons</title>
+    <title>Connexion – Saveurs & Saisons</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap & Icons -->
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-    >
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
-            rel="stylesheet"
-    >
-    <!-- Vogue Serif -->
-    <link
-            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
-            rel="stylesheet"
-    >
-
-    <style>
-        body {
-            background-color: #f9f6f1;
-            font-family: 'Georgia', serif;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .navbar {
-            /* your existing header styling is in header.php */
-        }
-        main {
-            flex: 1;
-        }
-        h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .login-card {
-            max-width: 400px;
-            margin: 2rem auto;
-            border: none;
-            border-radius: .5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-        .login-card .card-body {
-            padding: 2rem;
-        }
-        .form-label {
-            font-weight: bold;
-        }
-        .btn-primary {
-            background-color: #6b5b95;
-            border-color: #6b5b95;
-        }
-        .btn-primary:hover {
-            background-color: #5a4a84;
-            border-color: #5a4a84;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
-
+<body class="d-flex flex-column min-vh-100">
 <?php require_once(__DIR__ . '/header.php'); ?>
-
-<main>
-    <div class="container">
-        <?php if (!isset($_SESSION['LOGGED_USER'])): ?>
-            <div class="card login-card">
-                <div class="card-body">
-                    <h4>Se connecter</h4>
-
-                    <?php if (!empty($_SESSION['LOGIN_ERROR_MESSAGE'])): ?>
-                        <div class="alert alert-danger text-center">
-                            <?= htmlspecialchars($_SESSION['LOGIN_ERROR_MESSAGE']); ?>
-                        </div>
-                        <?php unset($_SESSION['LOGIN_ERROR_MESSAGE']); ?>
-                    <?php endif; ?>
-
-                    <form action="submit_login.php" method="POST">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">
-                                <i class="bi bi-envelope-fill me-1"></i> Adresse email
-                            </label>
-                            <input
-                                    type="email"
-                                    class="form-control"
-                                    id="email"
-                                    name="email"
-                                    required
-                                    placeholder="exemple@domaine.com"
-                            >
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="password" class="form-label">
-                                <i class="bi bi-lock-fill me-1"></i> Mot de passe
-                            </label>
-                            <input
-                                    type="password"
-                                    class="form-control"
-                                    id="password"
-                                    name="password"
-                                    required
-                                    placeholder="••••••••"
-                            >
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-box-arrow-in-right me-1"></i> Connexion
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        <?php else: ?>
-            <div class="alert alert-success text-center mt-5">
-                <i class="bi bi-person-check-fill me-1"></i>
-                Bonjour <strong><?= htmlspecialchars($_SESSION['LOGGED_USER']['name']); ?></strong>, vous êtes connecté(e) !
-            </div>
+<main class="flex-fill">
+    <div class="container py-4">
+        <h1>Connexion</h1>
+        <?php if ($error): ?>
+            <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
+        <form method="post" action="login.php">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Se connecter</button>
+        </form>
     </div>
 </main>
-
 <?php require_once(__DIR__ . '/footer.php'); ?>
-
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

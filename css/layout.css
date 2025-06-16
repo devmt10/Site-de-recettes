@@ -1,0 +1,19 @@
+/* Layout styles for overall structure */
+.container {
+    flex: 1;
+    padding: 2rem 1rem;
+}
+
+.row {
+    margin: 0 -15px;
+}
+
+.col-md-4, .col-md-6, .col-lg-4 {
+    padding: 0 15px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem 0.75rem;
+    }
+}

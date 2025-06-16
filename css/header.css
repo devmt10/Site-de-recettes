@@ -1,0 +1,109 @@
+.navbar {
+    font-family: 'Georgia', serif;
+    padding: 1.25rem 0;
+    margin: 0;
+    border-bottom: 1px solid #d4c9b8;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.navbar-brand i {
+    color: #d4a373;
+    font-size: 1.75rem;
+}
+
+.brand-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: #2d2d2d;
+    line-height: 1.2;
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    color: #333 !important;
+    font-size: 1rem;
+    padding: 0.5rem 1.25rem !important;
+    line-height: 1.5;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #d4a373 !important;
+}
+
+.navbar-collapse {
+    flex-grow: 1;
+}
+
+.d-flex.align-items-center {
+    gap: 0.75rem;
+}
+
+.user-name {
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #333;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    color: #333;
+    background: #fff;
+}
+
+.btn-dark.btn-sm {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    background: #fff;
+    color: #333;
+    border: 1px solid #333;
+    transition: background 0.3s ease;
+}
+
+.btn-dark.btn-sm:hover {
+    background: #f5f0e8;
+    color: #333;
+}
+
+@media (max-width: 767px) {
+    .navbar {
+        padding: 1rem 0;
+    }
+    .navbar-collapse {
+        margin-top: 0.75rem;
+    }
+    .navbar-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.95rem;
+    }
+    .d-flex.align-items-center {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .d-flex.align-items-center .btn, .d-flex.align-items-center .user-name {
+        width: 100%;
+        text-align: center;
+        padding: 0.5rem;
+    }
+    .brand-text {
+        font-size: 1.25rem;
+    }
+    .navbar-brand i {
+        font-size: 1.5rem;
+    }
+}

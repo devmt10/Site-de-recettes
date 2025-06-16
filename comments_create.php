@@ -1,63 +1,43 @@
-<?php require_once(__DIR__ . '/isConnect.php'); ?>
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once(__DIR__ . '/config/mysql.php');
+    require_once(__DIR__ . '/databaseconnect.php');
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    $comment = trim($_POST['comment']);
+    $review = isset($_POST['review']) ? (int)$_POST['review'] : 0;
+    $recipe_id = (int)$_GET['id'];
+    $user_id = $_SESSION['LOGGED_USER']['user_id'] ?? 0;
 
-<style>
-    .btn-primary {
-        background-color: #6b5b95;
-        border-color: #6b5b95;
+    if (empty($comment) || $review < 1 || $review > 5 || $user_id === 0) {
+        $error = 'Veuillez écrire un commentaire, donner une note entre 1 et 5, et être connecté.';
+    } else {
+        $stmt = $mysqlClient->prepare('INSERT INTO comment (recipe_id, user_id, comment, review, created_at) VALUES (?, ?, ?, ?, NOW())');
+        if ($stmt->execute([$recipe_id, $user_id, $comment, $review])) {
+            header("Location: recipes_read.php?id=$recipe_id");
+            exit;
+        } else {
+            $error = 'Erreur lors de l\'ajout du commentaire.';
+        }
     }
-    .btn-primary:hover {
-        background-color: #5a4a84;
-        border-color: #5a4a84;
-    }
-    .form-label {
-        font-weight: bold;
-        font-family: 'Georgia', serif;
-    }
-    textarea, input {
-        font-family: 'Georgia', serif;
-    }
-</style>
+}
+?>
 
-<form action="comments_post_create.php" method="POST" class="mt-4">
-    <input type="hidden" name="recipe_id" value="<?= $recipe['recipe_id'] ?>" />
-
+<form method="post" action="comments_create.php?id=<?= htmlspecialchars($_GET['id']) ?>">
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
     <div class="mb-3">
-        <label for="review" class="form-label">
-            <i class="bi bi-star-fill me-1"></i> Note (de 1 à 5)
-        </label>
-        <input
-                type="number"
-                class="form-control"
-                id="review"
-                name="review"
-                min="1"
-                max="5"
-                step="1"
-                required
-        >
+        <label for="comment" class="form-label">Votre commentaire</label>
+        <textarea class="form-control" id="comment" name="comment" rows="4" required></textarea>
     </div>
-
     <div class="mb-3">
-        <label for="comment" class="form-label">
-            <i class="bi bi-chat-left-text me-1"></i> Commentaire
-        </label>
-        <textarea
-                class="form-control"
-                id="comment"
-                name="comment"
-                placeholder="Soyez respectueux·se, nous sommes humain·es."
-                rows="4"
-                required
-        ></textarea>
+        <label class="form-label">Note</label>
+        <div class="rating-input">
+            <?php for ($i = 5; $i >= 1; $i--): ?>
+                <input type="radio" name="review" id="review<?php echo $i; ?>" value="<?php echo $i; ?>" required>
+                <label for="review<?php echo $i; ?>"><i class="bi bi-star"></i></label>
+            <?php endfor; ?>
+        </div>
     </div>
-
-    <div class="text-center mt-3">
-        <button type="submit" class="btn btn-primary px-4">
-            <i class="bi bi-send me-1"></i> Envoyer
-        </button>
-    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Envoyer</button>
 </form>
