@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,wind_speed_10m,weather_code&timezone=auto`);
             if (!res.ok) throw new Error('Erreur météo');
             const data = await res.json();
+            console.log("data", data)
 
             const condition = wmoWeatherCodes[data.current.weather_code] || 'Inconnu';
             const temp = `${Math.round(data.current.temperature_2m)}°C`;

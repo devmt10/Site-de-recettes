@@ -213,9 +213,66 @@
     .contact-feedback h3 { font-size: 1.8rem; }
 }
 .recipe-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Prend toute la hauteur disponible */
     transition: transform 0.3s ease;
-    flex: 1 1 calc(33.333% - 2rem);
-    margin: 1rem;
+}
+
+.card-body {
+    flex: 1; /* Permet au corps de la carte de prendre l'espace disponible */
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.card-content {
+    flex: 1; /* Le contenu prend l'espace restant */
+}
+
+/* Pour les images */
+.recipe-img {
+    width: 100%;
+    height: 200px; /* Hauteur fixe pour toutes les images */
+    object-fit: cover; /* Garantit que l'image couvre la zone sans déformation */
+}
+
+/* Pour les cartes sans image */
+.no-image {
+    height: 200px; /* Même hauteur que les images */
+    background: #f5f0e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #777;
+}
+
+/* Pour le texte du titre et description */
+.card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    min-height: 3em; /* Hauteur minimale pour 2 lignes de titre */
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limite à 3 lignes */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 4.5em; /* Hauteur minimale pour 3 lignes */
+}
+
+/* Pour le footer des cartes (boutons, etc.) */
+.card-footer {
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
 }
 @media (max-width: 992px) {
     .recipe-card {
