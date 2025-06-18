@@ -1,4 +1,5 @@
 <?php
+// 🔐 Sécurité : Validation des données utilisateur pour la recherche
 require_once 'databaseconnect.php';
 
 $q = $_GET['q'] ?? '';

@@ -14,6 +14,7 @@
     gap: 30px;
     width: 100%;
 }
+/* Responsive card */
 
 @media (max-width: 768px) {
     .card-container {
@@ -48,6 +49,8 @@
     margin: 0 auto 1rem;
 }
 
+/* The image on info.php */
+
 .chef-img {
     width: 100%;
     height: 1000px;
@@ -56,6 +59,7 @@
     border-top-right-radius: .375rem;
 }
 
+/*  If not images uploaded when a recipe is added  */
 .no-image {
     width: 100%;
     height: 250px;
@@ -162,11 +166,12 @@
     font-size: 0.75rem;
     font-weight: bold;
 }
+/* Borders around the recipe cards to show the season */
 
-.season-1 { border-left: 4px solid #2ecc71; }
-.season-2 { border-left: 4px solid #f1c40f; }
-.season-3 { border-left: 4px solid #e67e22; }
-.season-4 { border-left: 4px solid #3498db; }
+.season-1 { border-left: 5px solid #2ecc71; }
+.season-2 { border-left: 5px solid #f1c40f; }
+.season-3 { border-left: 5px solid #e67e22; }
+.season-4 { border-left: 5px solid #3498db; }
 
 .features, .contact-feedback {
     max-width: 720px;

@@ -59,6 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($error): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
+        <?php
+        // 🔐 Sécurité : Génération d’un token CSRF pour protéger l'inscription
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        $csrf_token = $_SESSION['csrf_token'];
+        ?>
         <form method="post" action="registration.php">
             <div class="mb-3">
                 <label for="full_name" class="form-label">Nom complet</label>
@@ -73,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
             <button type="submit" class="btn btn-primary btn-sm">S'inscrire</button>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
         </form>
     </div>
 </main>

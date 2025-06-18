@@ -1,3 +1,5 @@
+
+/* Body */
 body {
     background-color: #f9f6f1;
     font-family: 'Georgia', serif;
@@ -19,6 +21,7 @@ p {
     margin-bottom: 1rem;
 }
 
+/* Personalization of the button */
 .btn-primary {
     background: #2d2d2d;
     border: none;
@@ -107,6 +110,7 @@ p {
     color: #fff;
 }
 
+/* Form style*/
 .form-select,
 .form-control {
     font-family: 'Georgia', serif;
@@ -128,6 +132,8 @@ p {
     font-size: 0.85rem;
     color: #777;
 }
+
+/* Rating style*/
 
 .rating-input {
     display: flex;
@@ -161,6 +167,8 @@ p {
 .rating-input label:hover ~ label i::before {
     content: '\f586'; /* bi-star-fill */
 }
+
+/* Responsive */
 
 @media (max-width: 768px) {
     .btn-primary, .btn-success {

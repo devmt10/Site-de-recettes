@@ -29,6 +29,12 @@ footer a:hover {
     color: #ddd;
 }
 
-.footer-link img {
-    filter: invert(1);
+footer .small a {
+    margin-right: 1rem;
+    color: #fff;
+    text-decoration: underline;
 }
+footer .small a:hover {
+    color: #ccc;
+}
+

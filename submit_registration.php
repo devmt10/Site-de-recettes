@@ -1,5 +1,10 @@
 <?php
+// 🔐 Sécurité : Validation CSRF et des champs d'inscription
 session_start();
+
+if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+    die('Erreur de sécurité CSRF.');
+}
 require_once(__DIR__ . '/config/mysql.php');
 require_once(__DIR__ . '/databaseconnect.php');
 

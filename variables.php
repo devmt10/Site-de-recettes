@@ -1,3 +1,4 @@
+// 🔐 Sécurité : Fichier de configuration, aucun traitement dynamique ici
 <?php
 require_once(__DIR__ . '/databaseconnect.php');
 
