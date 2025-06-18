@@ -11,6 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($full_name) || empty($email) || empty($password)) {
         $error = 'Veuillez remplir tous les champs.';
+    } elseif (
+        strlen($password) < 8 ||
+        !preg_match('/[A-Z]/', $password) ||
+        !preg_match('/[a-z]/', $password) ||
+        !preg_match('/[0-9]/', $password) ||
+        !preg_match('/[\W]/', $password)
+    ) {
+        $error = "Le mot de passe doit contenir au moins 8 caractères, avec une majuscule, une minuscule, un chiffre et un caractère spécial.";
     } else {
         $stmt = $mysqlClient->prepare('SELECT email FROM user WHERE email = ?');
         $stmt->execute([$email]);
@@ -60,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         <?php
-        // 🔐 Sécurité : Génération d’un token CSRF pour protéger l'inscription
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
@@ -78,6 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="password" class="form-label">Mot de passe</label>
                 <input type="password" class="form-control" id="password" name="password" required>
+                <div class="form-text">
+                    Minimum 8 caractères, avec majuscule, minuscule, chiffre et caractère spécial.
+                </div>
             </div>
             <button type="submit" class="btn btn-primary btn-sm">S'inscrire</button>
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">

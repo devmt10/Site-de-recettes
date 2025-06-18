@@ -19,8 +19,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // 🔐 Vérification du mot de passe
+    if (
+        strlen($password) < 8 ||
+        !preg_match('/[A-Z]/', $password) ||
+        !preg_match('/[a-z]/', $password) ||
+        !preg_match('/[0-9]/', $password) ||
+        !preg_match('/[\W]/', $password)
+    ) {
+        $_SESSION['REGISTRATION_ERROR_MESSAGE'] = "Le mot de passe doit contenir au moins 8 caractères, avec une majuscule, une minuscule, un chiffre et un caractère spécial.";
+        header('Location: registration.php');
+        exit;
+    }
+
     try {
-        // Check if email already exists
         $stmt = $mysqlClient->prepare('SELECT COUNT(*) FROM user WHERE email = ?');
         $stmt->execute([$email]);
         if ($stmt->fetchColumn() > 0) {
@@ -29,15 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Hash password and insert user
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $insertStmt = $mysqlClient->prepare('INSERT INTO user (full_name, email, password) VALUES (?, ?, ?)');
         $insertStmt->execute([$full_name, $email, $hashed_password]);
 
-        // Get the new user's ID
         $userId = $mysqlClient->lastInsertId();
 
-        // Auto-login the user
         $_SESSION['LOGGED_USER'] = [
             'user_id' => $userId,
             'email' => $email,
